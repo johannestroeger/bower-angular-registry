@@ -6,7 +6,7 @@
  * @author      Johannes Troeger <johannes.troeger@gmail.com>
  * @repository  https://github.com/johannestroeger/angular-registry
  * @license     http://www.wtfpl.net/ WTFPL – Do What the Fuck You Want to Public License
- * @version     0.1.0
+ * @version     0.1.1
  */
 
 angular.module('johannestroeger.registry', [])
@@ -17,7 +17,7 @@ angular.module('johannestroeger.registry', [])
   var defaults = {};
 
   this.defaults = function (obj) {
-    defaults = obj;
+    angular.extend(defaults, obj);
     angular.extend(register, defaults);
   };
 
