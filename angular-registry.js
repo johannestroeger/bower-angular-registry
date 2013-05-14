@@ -1,85 +1,64 @@
 'use strict';
 
 /**
- * Angular Registry - A Registry Module for Angular
- *
+ * @name        angular-registry
+ * @description A Registry Module for AngularJS
+ * @author      Johannes Troeger <johannes.troeger@gmail.com>
+ * @repository  https://github.com/johannestroeger/angular-registry
+ * @license     http://www.wtfpl.net/ WTFPL – Do What the Fuck You Want to Public License
+ * @version     0.1.0
  */
 
-angular.module('ngRegistry', [])
+angular.module('johannestroeger.registry', [])
 
 .provider('$registry', function () {
 
   var register = {};
   var defaults = {};
 
-  var setObject = function (name, value, context) {
-
-    var parts = name.split('.');
-    var prop = parts.pop();
-
-    var obj = getObject(parts, true, context);
-
-    if(angular.isObject(obj)) {
-      obj[prop] = value;
-      return obj[prop];
-    }
-
-    return false;
-  };
-
-  var getObject = function (parts, create, context) {
-
-    if(angular.isString(parts)) {
-      parts = parts.split('.');
-    }
-
-    if(angular.isObject(create)) {
-      context = create;
-    }
-
-    context = context || {};
-
-    // return complete register
-    if(!angular.isDefined(parts)) {
-      return context;
-    }
-
-    // otherwise loop through context
-    for(var i=0; i<parts.length;i++) {
-      if(!context.hasOwnProperty(parts[i])) {
-        context[parts[i]] = {};
-      }
-      context = context[parts[i]];
-    }
-
-    return context;
-  };
-
   this.defaults = function (obj) {
     defaults = obj;
-    register = angular.copy(defaults);
+    angular.extend(register, defaults);
   };
 
-  this.$get = function () {
+  this.$get = ['$parse', function ($parse) {
+
+    var cache = {};
+
+    var fnCache = function (exp) {
+      return (cache[exp]) ? cache[exp] : cache[exp] = $parse(exp);
+    };
+
+    var registry = function (root, exp, value, del) {
+      var parse = fnCache(exp);
+
+      if(value || del) {
+        return parse.assign(root, value);
+      }
+      if(exp) {
+        return parse(root);
+      }
+
+      return root;
+    };
+
     return {
-      set: function (key, value) {
-        return setObject(key, value, register);
+      set: function (exp, value) {
+        return registry(register, exp, value);
       },
-      get: function (key) {
-        return getObject(key, register);
+      get: function (exp) {
+        return registry(register, exp);
       },
-      del: function (key) {
-        return setObject(key, undefined, register);
+      del: function (exp) {
+        return registry(register, exp, undefined, true);
       },
-      reset: function (key) {
-        if(!angular.isString(key)) {
-          register = angular.copy(defaults);
-        } else {
-          setObject(key, getObject(key, defaults), register);
+      reset: function(exp) {
+        if(exp) {
+          return registry(register, exp, registry(defaults, exp));
         }
-        return register;
+        register = {};
+        return angular.extend(register, defaults);
       }
     };
-  };
-
+  }];
 });
