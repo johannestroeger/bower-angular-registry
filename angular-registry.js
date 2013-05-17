@@ -1,21 +1,11 @@
 'use strict';
-
-/**
- * @name        angular-registry
- * @description A Registry Module for AngularJS
- * @author      Johannes Troeger <johannes.troeger@gmail.com>
- * @repository  https://github.com/johannestroeger/angular-registry
- * @license     http://www.wtfpl.net/ WTFPL – Do What the Fuck You Want to Public License
- * @version     0.2.0
- */
-
 angular.module('johannestroeger.registry', []).provider('$registry', function () {
   var register = {};
   var defaults = {};
   var cacheLimit = 100;
   this.defaults = function (obj) {
     angular.extend(defaults, obj);
-    angular.extend(register, defaults);
+    angular.extend(register, angular.copy(defaults));
   };
   this.cacheLimit = function (limit) {
     cacheLimit = limit;
