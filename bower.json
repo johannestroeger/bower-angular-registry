@@ -1,6 +1,5 @@
 {
   "name": "angular-registry",
-  "version": "0.2.1",
-  "main": "./angular-registry.js",
-  "dependencies": {}
+  "version": "0.2.2",
+  "main": "./angular-registry.js"
 }

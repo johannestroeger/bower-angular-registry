@@ -43,7 +43,7 @@ angular.module('johannestroeger.registry', []).provider('$registry', function ()
         },
         reset: function (exp) {
           if (exp) {
-            return registry(register, exp, registry(defaults, exp));
+            return registry(register, exp, angular.copy(registry(defaults, exp)));
           }
           register = {};
           return angular.extend(register, defaults);
